@@ -1,5 +1,5 @@
 name: Build and Release
-
+run: dotnet build EA17LinkMLExporter.csproj -v:detailed
 on:
   push:
     tags:

@@ -26,8 +26,14 @@ internal static class DiagramWriter
             var label = "<b>" + Esc(title) + "</b><hr>" +
             string.Join("<br>", cls.Properties.Select(a => Esc(a.Name + ": " + a.Type)));
 
+            var style = "swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=30;html=1;rounded=0;";
+            if (!string.IsNullOrWhiteSpace(cls.Color))
+            {
+                style += "fillColor=" + cls.Color.TrimStart('#') + ";";
+            }
+
             root.Add(new XElement("mxCell", new XAttribute("id", "c" + cls.Id), new XAttribute("value", label),
-                new XAttribute("style", "swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=30;html=1;rounded=0;"),
+                new XAttribute("style", style),
                 new XAttribute("vertex", "1"), new XAttribute("parent", "1"),
                 new XElement("mxGeometry", new XAttribute("x", p.X), new XAttribute("y", p.Y), new XAttribute("width", Width),
                     new XAttribute("height", Height(cls)), new XAttribute("as", "geometry"))));
@@ -36,8 +42,15 @@ internal static class DiagramWriter
         {
             var p = positions[item.Id];
             var label = "<b>«enumeration» " + Esc(item.Name) + "</b><hr>" + string.Join("<br>", item.Values.Select(Esc));
+            
+            var style = "swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=30;html=1;fillColor=#fff2cc;strokeColor=#d6b656;";
+            if (!string.IsNullOrWhiteSpace(item.Color))
+            {
+                style = "swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=30;html=1;fillColor=" + item.Color.TrimStart('#') + ";strokeColor=#d6b656;";
+            }
+
             root.Add(new XElement("mxCell", new XAttribute("id", "c" + item.Id), new XAttribute("value", label),
-                new XAttribute("style", "swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=30;html=1;fillColor=#fff2cc;strokeColor=#d6b656;"),
+                new XAttribute("style", style),
                 new XAttribute("vertex", "1"), new XAttribute("parent", "1"),
                 new XElement("mxGeometry", new XAttribute("x", p.X), new XAttribute("y", p.Y), new XAttribute("width", Width),
                     new XAttribute("height", EnumHeight(item)), new XAttribute("as", "geometry"))));
@@ -76,17 +89,24 @@ internal static class DiagramWriter
         foreach (var cls in model.Classes) foreach (var parent in cls.Parents)
         { var target = model.Classes.FirstOrDefault(x => x.Name == parent); if (target is not null) AddLine(b, positions[cls.Id], positions[target.Id], true); }
         foreach (var cls in model.Classes)
-        { var title = string.IsNullOrWhiteSpace(cls.Version) ? cls.Name : $"{cls.Name} (v{cls.Version})";
+        { 
+            var title = string.IsNullOrWhiteSpace(cls.Version) ? cls.Name : $"{cls.Name} (v{cls.Version})";
+            var fillColor = string.IsNullOrWhiteSpace(cls.Color) ? "white" : cls.Color;
 
-    AddBox(
-        b,
-        title,
-        cls.Properties.Select(x => x.Name + ": " + x.Type),
-        positions[cls.Id],
-        Height(cls),
-        false);
-}
-        foreach (var item in model.Enums) AddBox(b, "«enumeration» " + item.Name, item.Values, positions[item.Id], EnumHeight(item), true);
+            AddBox(
+                b,
+                title,
+                cls.Properties.Select(x => x.Name + ": " + x.Type),
+                positions[cls.Id],
+                Height(cls),
+                false,
+                fillColor);
+        }
+        foreach (var item in model.Enums) 
+        { 
+            var fillColor = string.IsNullOrWhiteSpace(item.Color) ? "#fff7d6" : item.Color;
+            AddBox(b, "«enumeration» " + item.Name, item.Values, positions[item.Id], EnumHeight(item), true, fillColor); 
+        }
         b.AppendLine("</svg>");
         return b.ToString();
     }
@@ -108,11 +128,11 @@ internal static class DiagramWriter
     private static int EnumHeight(UmlEnum value) => Math.Max(80, Header + value.Values.Count * Row + 12);
     private static string Esc(string value) => SecurityElement.Escape(value) ?? "";
     private static void AddLine(StringBuilder b, (int X, int Y) a, (int X, int Y) z, bool inheritance) =>
-        b.AppendLine($"<line x1=\"{a.X + Width / 2}\" y1=\"{a.Y + 60}\" x2=\"{z.X + Width / 2}\" y2=\"{z.Y + 60}\" stroke=\"#475569\" stroke-width=\"2\" {(inheritance ? "marker-end=\"url(#triangle)\"" : "")}/>");
+        b.AppendLine($"<line x1=\"{a.X + Width / 2}\" y1=\"{a.Y + 60}\" x2=\"{z.X + Width / 2}\" y2=\"{z.Y + 60}\" stroke=\"#475569\" stroke-width=\"2\" {(inheritance ? "marker-end=\"url(#triangle)\"" : "")} />");
 
-    private static void AddBox(StringBuilder b, string title, IEnumerable<string> rows, (int X, int Y) p, int height, bool enumeration)
+    private static void AddBox(StringBuilder b, string title, IEnumerable<string> rows, (int X, int Y) p, int height, bool enumeration, string fillColor)
     {
-        b.AppendLine($"<rect x=\"{p.X}\" y=\"{p.Y}\" width=\"{Width}\" height=\"{height}\" rx=\"3\" fill=\"{(enumeration ? "#fff7d6" : "white")}\" stroke=\"#334155\" stroke-width=\"2\"/>");
+        b.AppendLine($"<rect x=\"{p.X}\" y=\"{p.Y}\" width=\"{Width}\" height=\"{height}\" rx=\"3\" fill=\"{fillColor}\" stroke=\"#334155\" stroke-width=\"2\"/>");
         b.AppendLine($"<line x1=\"{p.X}\" y1=\"{p.Y + Header}\" x2=\"{p.X + Width}\" y2=\"{p.Y + Header}\" stroke=\"#334155\"/>");
         b.AppendLine($"<text x=\"{p.X + Width / 2}\" y=\"{p.Y + 22}\" text-anchor=\"middle\" font-family=\"Segoe UI, sans-serif\" font-size=\"14\" font-weight=\"600\">{Esc(title)}</text>");
         int y = p.Y + Header + 18;

@@ -15,6 +15,7 @@ internal sealed class UmlClass
     public required string Name { get; init; }
     public required string QualifiedName { get; init; }
     public required string Notes { get; init; }
+    public string? Version { get; init; }
     public bool Abstract { get; init; }
     public List<UmlProperty> Properties { get; } = [];
     public List<string> Parents { get; } = [];

@@ -82,7 +82,7 @@ internal static class DiagramWriter
         int rows = Math.Max(1, (int)Math.Ceiling(count / (double)columns));
         int canvasWidth = columns * 340 + 40, canvasHeight = rows * 280 + 40;
         var b = new StringBuilder();
-        b.AppendLine($"<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"{canvasWidth}\" height=\"{canvasHeight}\" viewBox=\"0 0 {canvasWidth} {canvasHeight}\">");
+        b.AppendLine($"<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"{canvasWidth}\" height=\"{canvasHeight}\" viewBox=\"0 0 {canvasWidth} {canvasHeight}\"><");
         b.AppendLine("<defs><marker id=\"triangle\" markerWidth=\"12\" markerHeight=\"12\" refX=\"11\" refY=\"6\" orient=\"auto\"><path d=\"M 0 0 L 12 6 L 0 12 z\" fill=\"white\" stroke=\"#475569\"/></marker></defs>");
         b.AppendLine("<rect width=\"100%\" height=\"100%\" fill=\"#f8fafc\"/>");
         foreach (var rel in model.Relations) AddLine(b, positions[rel.SourceId], positions[rel.TargetId], false);

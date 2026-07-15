@@ -7,10 +7,23 @@ internal static class EaModelReader
 {
     public static ModelSnapshot Read(EA.Repository repository, EA.Package root)
     {
+        // Try to get version from package tagged values
+        string packageVersion = "";
+        for (int i = 0; i < root.TaggedValues.Count; i++)
+        {
+            EA.TaggedValue tv = root.TaggedValues.GetAt(i);
+            if (tv.Name.Equals("version", StringComparison.OrdinalIgnoreCase))
+            {
+                packageVersion = tv.Value ?? "";
+                break;
+            }
+        }
+
         var model = new ModelSnapshot
         {
             Name = root.Name,
-            Notes = CleanNotes(root.Notes)
+            Notes = CleanNotes(root.Notes),
+            Version = packageVersion
         };
         ReadPackage(repository, root, root.Name, model);
         ReadRelations(repository, model);
@@ -23,7 +36,13 @@ internal static class EaModelReader
         {
             if (IsEnumeration(element))
             {
-                var item = new UmlEnum { Id = element.ElementID, Name = element.Name, Notes = CleanNotes(element.Notes) };
+                var item = new UmlEnum 
+                { 
+                    Id = element.ElementID, 
+                    Name = element.Name, 
+                    Notes = CleanNotes(element.Notes),
+                    Color = ExtractColor(element)
+                };
                 foreach (EA.Attribute attribute in element.Attributes)
                     item.Values.Add(attribute.Name);
                 model.Enums.Add(item);
@@ -55,7 +74,8 @@ internal static class EaModelReader
                 QualifiedName = path + "::" + element.Name,
                 Notes = CleanNotes(element.Notes),
                 Version = version,
-                Abstract = element.Abstract == "1"
+                Abstract = element.Abstract == "1",
+                Color = ExtractColor(element)
             };
             foreach (EA.Attribute attribute in element.Attributes)
             {
@@ -131,6 +151,34 @@ internal static class EaModelReader
         element.Stereotype.Equals("enumeration", StringComparison.OrdinalIgnoreCase);
 
     private static string DefaultMultiplicity(string value) => string.IsNullOrWhiteSpace(value) ? "0..1" : value;
+
+    private static string? ExtractColor(EA.Element element)
+    {
+        // EA stores colors as RGB hex in the FillColor property
+        // Returns null if not set or converts to hex format
+        try
+        {
+            if (!string.IsNullOrWhiteSpace(element.FillColor))
+            {
+                // FillColor is typically a hex string like "CCFFFF" or can be an RGB integer
+                string color = element.FillColor.Trim();
+                if (color.Length > 0 && !color.Equals("16777215", StringComparison.OrdinalIgnoreCase)) // 16777215 is white (default)
+                {
+                    // If it's numeric, convert to hex; otherwise assume it's already hex
+                    if (int.TryParse(color, out int rgb))
+                    {
+                        return "#" + rgb.ToString("X6");
+                    }
+                    else if (color.Length == 6 || (color.StartsWith("#") && color.Length == 7))
+                    {
+                        return color.StartsWith("#") ? color : "#" + color;
+                    }
+                }
+            }
+        }
+        catch { /* return null on error */ }
+        return null;
+    }
 
     internal static string CleanNotes(string? value)
     {

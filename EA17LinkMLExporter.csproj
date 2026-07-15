@@ -14,9 +14,8 @@
   </PropertyGroup>
   <ItemGroup>
     <Reference Include="Interop.EA">
-      <HintPath>$(EAInstallDir)\Interop.EA.dll</HintPath>
-      <EmbedInteropTypes>true</EmbedInteropTypes>
-      <Private>false</Private>
+      <HintPath>lib\Interop.EA.dll</HintPath>
+      <Private>true</Private>
     </Reference>
   </ItemGroup>
 </Project>

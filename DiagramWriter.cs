@@ -75,7 +75,17 @@ internal static class DiagramWriter
         foreach (var rel in model.Relations) AddLine(b, positions[rel.SourceId], positions[rel.TargetId], false);
         foreach (var cls in model.Classes) foreach (var parent in cls.Parents)
         { var target = model.Classes.FirstOrDefault(x => x.Name == parent); if (target is not null) AddLine(b, positions[cls.Id], positions[target.Id], true); }
-        foreach (var cls in model.Classes) AddBox(b, cls.Name, cls.Properties.Select(x => x.Name + ": " + x.Type), positions[cls.Id], Height(cls), false);
+        foreach (var cls in model.Classes)
+        { var title = string.IsNullOrWhiteSpace(cls.Version) ? cls.Name : $"{cls.Name} (v{cls.Version})";
+
+    AddBox(
+        b,
+        title,
+        cls.Properties.Select(x => x.Name + ": " + x.Type),
+        positions[cls.Id],
+        Height(cls),
+        false);
+}
         foreach (var item in model.Enums) AddBox(b, "«enumeration» " + item.Name, item.Values, positions[item.Id], EnumHeight(item), true);
         b.AppendLine("</svg>");
         return b.ToString();

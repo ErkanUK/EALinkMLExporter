@@ -17,6 +17,8 @@ internal static class MarkdownWriter
             b.AppendLine("### " + cls.Name).AppendLine();
             if (cls.Notes.Length > 0) b.AppendLine(cls.Notes).AppendLine();
             b.AppendLine("Qualified name: `" + cls.QualifiedName + "`  ");
+            if (!string.IsNullOrWhiteSpace(cls.Version))
+            b.AppendLine("Version: `" + cls.Version + "`  ");
             if (cls.Parents.Count > 0) b.AppendLine("Extends: " + string.Join(", ", cls.Parents.Select(x => "`" + x + "`")) + "  ");
             if (cls.Abstract) b.AppendLine("Abstract: yes  ");
             b.AppendLine();

@@ -37,6 +37,7 @@ internal static class EaModelReader
                 Name = element.Name,
                 QualifiedName = path + "::" + element.Name,
                 Notes = CleanNotes(element.Notes),
+                Version = element.Version,
                 Abstract = element.Abstract == "1"
             };
             foreach (EA.Attribute attribute in element.Attributes)

@@ -36,6 +36,7 @@ internal static class LinkMlWriter
         {
             b.AppendLine("  " + Identifier(cls.Name) + ":");
             if (cls.Notes.Length > 0) b.AppendLine("    description: " + Scalar(cls.Notes));
+            if (!string.IsNullOrWhiteSpace(cls.Version)) b.AppendLine("    version: " + Scalar(cls.Version));
             if (cls.Abstract) b.AppendLine("    abstract: true");
             if (cls.Parents.Count > 0) b.AppendLine("    is_a: " + Identifier(cls.Parents[0]));
             if (cls.Parents.Count > 1)

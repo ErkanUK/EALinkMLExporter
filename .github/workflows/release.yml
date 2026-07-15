@@ -2,8 +2,8 @@ name: Build and Release
 
 on:
   push:
-    tags:
-      - 'v*'
+    branches:
+      - main
 
 permissions:
   contents: write
@@ -20,32 +20,22 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '9.0.x'
+
       - name: Verify EA DLL
         shell: pwsh
         run: |
           Get-ChildItem -Recurse lib
           Get-Item lib\Interop.EA.dll | Format-List Name,Length
-      - name: Restore
-        run: dotnet restore
 
-     - name: Build
-     run: dotnet build EA17LinkMLExporter.csproj --configuration Release --no-restore -v:detailed
+      - name: Restore
+        run: dotnet restore EA17LinkMLExporter.csproj
+
+      - name: Build
+        run: dotnet build EA17LinkMLExporter.csproj --configuration Release --no-restore
 
       - name: Publish
-        run: >
-          dotnet publish
-          --configuration Release
-          --runtime win-x64
-          --self-contained false
-          --output publish
+        run: dotnet publish EA17LinkMLExporter.csproj --configuration Release --runtime win-x64 --self-contained false --output publish
 
       - name: Create ZIP
         shell: pwsh
         run: Compress-Archive -Path publish\* -DestinationPath EA17LinkMLExporter.zip
-
-      - name: Create Release
-        uses: softprops/action-gh-release@v2
-        with:
-          files: EA17LinkMLExporter.zip
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

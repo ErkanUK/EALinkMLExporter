@@ -27,8 +27,7 @@ internal static class EaModelReader
                 { 
                     Id = element.ElementID, 
                     Name = element.Name, 
-                    Notes = CleanNotes(element.Notes),
-                    Color = ExtractColor(element)
+                    Notes = CleanNotes(element.Notes)
                 };
                 foreach (EA.Attribute attribute in element.Attributes)
                     item.Values.Add(attribute.Name);
@@ -45,8 +44,7 @@ internal static class EaModelReader
                 QualifiedName = path + "::" + element.Name,
                 Notes = CleanNotes(element.Notes),
                 Version = element.Version,
-                Abstract = element.Abstract == "1",
-                Color = ExtractColor(element)
+                Abstract = element.Abstract == "1"
             };
             foreach (EA.Attribute attribute in element.Attributes)
             {
@@ -122,29 +120,6 @@ internal static class EaModelReader
         element.Stereotype.Equals("enumeration", StringComparison.OrdinalIgnoreCase);
 
     private static string DefaultMultiplicity(string value) => string.IsNullOrWhiteSpace(value) ? "0..1" : value;
-
-    private static string? ExtractColor(EA.Element element)
-    {
-        // EA stores colors as BGR integer in the BackColor property
-        // Returns null if not set or converts to hex format
-        try
-        {
-            int color = element.BackColor;
-            
-            // Check if it's the default white color (0xFFFFFF in BGR = 16777215 in decimal)
-            if (color != -1 && color != 16777215 && color != 0xFFFFFF)
-            {
-                // Convert BGR to RGB
-                int b = (color >> 16) & 0xFF;
-                int g = (color >> 8) & 0xFF;
-                int r = color & 0xFF;
-                int rgb = (r << 16) | (g << 8) | b;
-                return "#" + rgb.ToString("X6");
-            }
-        }
-        catch { /* return null on error */ }
-        return null;
-    }
 
     internal static string CleanNotes(string? value)
     {

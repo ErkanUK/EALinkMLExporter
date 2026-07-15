@@ -12,7 +12,7 @@ internal sealed class ModelSnapshot
 
 internal sealed class UmlClass
 {
-    public required int Id { get; init; }
+    public required short Id { get; init; }
     public required string Name { get; init; }
     public required string QualifiedName { get; init; }
     public required string Notes { get; init; }
@@ -25,7 +25,7 @@ internal sealed class UmlClass
 
 internal sealed class UmlEnum
 {
-    public required int Id { get; init; }
+    public required short Id { get; init; }
     public required string Name { get; init; }
     public required string Notes { get; init; }
     public string? Color { get; init; }
@@ -46,8 +46,8 @@ internal sealed class UmlProperty
 internal sealed class UmlRelation
 {
     public required string Kind { get; init; }
-    public required int SourceId { get; init; }
-    public required int TargetId { get; init; }
+    public required short SourceId { get; init; }
+    public required short TargetId { get; init; }
     public required string SourceName { get; init; }
     public required string TargetName { get; init; }
     public required string SourceRole { get; init; }

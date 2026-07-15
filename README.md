@@ -4,7 +4,7 @@ A 64-bit Sparx Enterprise Architect 17 add-in that exports the package selected 
 
 - a LinkML YAML schema;
 - Markdown documentation, similar in spirit to EA's F8 document generation;
-- an editable draw.io class diagram; and
+- an editable draw.io class diagram; 
 - an SVG diagram preview embedded in the Markdown.
 
 Classes, attributes, notes, enumerations, generalizations, associations, aggregations/compositions, roles, and multiplicities are included. Child packages are traversed recursively.

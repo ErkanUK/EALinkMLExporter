@@ -31,13 +31,30 @@ internal static class EaModelReader
             }
 
             if (!IsClass(element)) continue;
+            
+            // Try to get version from tagged values if element.Version is empty
+            string version = element.Version ?? "";
+            if (string.IsNullOrWhiteSpace(version))
+            {
+                // Try to get version from tagged values
+                for (int i = 0; i < element.TaggedValues.Count; i++)
+                {
+                    EA.TaggedValue tv = element.TaggedValues.GetAt(i);
+                    if (tv.Name.Equals("version", StringComparison.OrdinalIgnoreCase))
+                    {
+                        version = tv.Value ?? "";
+                        break;
+                    }
+                }
+            }
+            
             var cls = new UmlClass
             {
                 Id = element.ElementID,
                 Name = element.Name,
                 QualifiedName = path + "::" + element.Name,
                 Notes = CleanNotes(element.Notes),
-                Version = element.Version,
+                Version = version,
                 Abstract = element.Abstract == "1"
             };
             foreach (EA.Attribute attribute in element.Attributes)

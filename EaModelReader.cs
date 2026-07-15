@@ -23,12 +23,7 @@ internal static class EaModelReader
         {
             if (IsEnumeration(element))
             {
-                var item = new UmlEnum 
-                { 
-                    Id = element.ElementID, 
-                    Name = element.Name, 
-                    Notes = CleanNotes(element.Notes)
-                };
+                var item = new UmlEnum { Id = (short)element.ElementID, Name = element.Name, Notes = CleanNotes(element.Notes) };
                 foreach (EA.Attribute attribute in element.Attributes)
                     item.Values.Add(attribute.Name);
                 model.Enums.Add(item);
@@ -36,10 +31,9 @@ internal static class EaModelReader
             }
 
             if (!IsClass(element)) continue;
-            
             var cls = new UmlClass
             {
-                Id = element.ElementID,
+                Id = (short)element.ElementID,
                 Name = element.Name,
                 QualifiedName = path + "::" + element.Name,
                 Notes = CleanNotes(element.Notes),
@@ -73,11 +67,11 @@ internal static class EaModelReader
 
     private static void ReadRelations(EA.Repository repository, ModelSnapshot model)
     {
-        var ids = model.Classes.Select(x => x.Id).Concat(model.Enums.Select(x => x.Id)).ToHashSet();
+        var ids = model.Classes.Select(x => (int)x.Id).Concat(model.Enums.Select(x => (int)x.Id)).ToHashSet();
         var seen = new HashSet<int>();
         foreach (var source in model.Classes)
         {
-            EA.Element element = repository.GetElementByID(source.Id);
+            EA.Element element = repository.GetElementByID((int)source.Id);
             foreach (EA.Connector connector in element.Connectors)
             {
                 if (!seen.Add(connector.ConnectorID) || !ids.Contains(connector.ClientID) || !ids.Contains(connector.SupplierID))
@@ -86,7 +80,7 @@ internal static class EaModelReader
                 var supplier = repository.GetElementByID(connector.SupplierID);
                 if (connector.Type.Equals("Generalization", StringComparison.OrdinalIgnoreCase))
                 {
-                    var child = model.Classes.FirstOrDefault(x => x.Id == connector.ClientID);
+                    var child = model.Classes.FirstOrDefault(x => x.Id == (short)connector.ClientID);
                     if (child is not null) child.Parents.Add(supplier.Name);
                     continue;
                 }
@@ -97,8 +91,8 @@ internal static class EaModelReader
                 model.Relations.Add(new UmlRelation
                 {
                     Kind = connector.Type,
-                    SourceId = connector.ClientID,
-                    TargetId = connector.SupplierID,
+                    SourceId = (short)connector.ClientID,
+                    TargetId = (short)connector.SupplierID,
                     SourceName = client.Name,
                     TargetName = supplier.Name,
                     SourceRole = connector.ClientEnd.Role,

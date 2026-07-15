@@ -7,23 +7,10 @@ internal static class EaModelReader
 {
     public static ModelSnapshot Read(EA.Repository repository, EA.Package root)
     {
-        // Try to get version from package tagged values
-        string packageVersion = "";
-        for (int i = 0; i < root.TaggedValues.Count; i++)
-        {
-            EA.TaggedValue tv = root.TaggedValues.GetAt(i);
-            if (tv.Name.Equals("version", StringComparison.OrdinalIgnoreCase))
-            {
-                packageVersion = tv.Value ?? "";
-                break;
-            }
-        }
-
         var model = new ModelSnapshot
         {
             Name = root.Name,
-            Notes = CleanNotes(root.Notes),
-            Version = packageVersion
+            Notes = CleanNotes(root.Notes)
         };
         ReadPackage(repository, root, root.Name, model);
         ReadRelations(repository, model);
@@ -51,29 +38,13 @@ internal static class EaModelReader
 
             if (!IsClass(element)) continue;
             
-            // Try to get version from tagged values if element.Version is empty
-            string version = element.Version ?? "";
-            if (string.IsNullOrWhiteSpace(version))
-            {
-                // Try to get version from tagged values
-                for (int i = 0; i < element.TaggedValues.Count; i++)
-                {
-                    EA.TaggedValue tv = element.TaggedValues.GetAt(i);
-                    if (tv.Name.Equals("version", StringComparison.OrdinalIgnoreCase))
-                    {
-                        version = tv.Value ?? "";
-                        break;
-                    }
-                }
-            }
-            
             var cls = new UmlClass
             {
                 Id = element.ElementID,
                 Name = element.Name,
                 QualifiedName = path + "::" + element.Name,
                 Notes = CleanNotes(element.Notes),
-                Version = version,
+                Version = element.Version,
                 Abstract = element.Abstract == "1",
                 Color = ExtractColor(element)
             };
@@ -154,26 +125,21 @@ internal static class EaModelReader
 
     private static string? ExtractColor(EA.Element element)
     {
-        // EA stores colors as RGB hex in the FillColor property
+        // EA stores colors as BGR integer in the BackColor property
         // Returns null if not set or converts to hex format
         try
         {
-            if (!string.IsNullOrWhiteSpace(element.FillColor))
+            int color = element.BackColor;
+            
+            // Check if it's the default white color (0xFFFFFF in BGR = 16777215 in decimal)
+            if (color != -1 && color != 16777215 && color != 0xFFFFFF)
             {
-                // FillColor is typically a hex string like "CCFFFF" or can be an RGB integer
-                string color = element.FillColor.Trim();
-                if (color.Length > 0 && !color.Equals("16777215", StringComparison.OrdinalIgnoreCase)) // 16777215 is white (default)
-                {
-                    // If it's numeric, convert to hex; otherwise assume it's already hex
-                    if (int.TryParse(color, out int rgb))
-                    {
-                        return "#" + rgb.ToString("X6");
-                    }
-                    else if (color.Length == 6 || (color.StartsWith("#") && color.Length == 7))
-                    {
-                        return color.StartsWith("#") ? color : "#" + color;
-                    }
-                }
+                // Convert BGR to RGB
+                int b = (color >> 16) & 0xFF;
+                int g = (color >> 8) & 0xFF;
+                int r = color & 0xFF;
+                int rgb = (r << 16) | (g << 8) | b;
+                return "#" + rgb.ToString("X6");
             }
         }
         catch { /* return null on error */ }

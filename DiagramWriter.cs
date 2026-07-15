@@ -18,7 +18,14 @@ internal static class DiagramWriter
         foreach (var cls in model.Classes)
         {
             var p = positions[cls.Id];
-            var label = "<b>" + Esc(cls.Name) + "</b><hr>" + string.Join("<br>", cls.Properties.Select(a => Esc(a.Name + ": " + a.Type)));
+           
+            var title = string.IsNullOrWhiteSpace(cls.Version)
+            ? cls.Name
+            : $"{cls.Name} (v{cls.Version})";
+
+            var label = "<b>" + Esc(title) + "</b><hr>" +
+            string.Join("<br>", cls.Properties.Select(a => Esc(a.Name + ": " + a.Type)));
+
             root.Add(new XElement("mxCell", new XAttribute("id", "c" + cls.Id), new XAttribute("value", label),
                 new XAttribute("style", "swimlane;fontStyle=1;childLayout=stackLayout;horizontal=1;startSize=30;html=1;rounded=0;"),
                 new XAttribute("vertex", "1"), new XAttribute("parent", "1"),

@@ -1,5 +1,5 @@
 name: Build and Release
-run: dotnet build EA17LinkMLExporter.csproj -v:detailed
+
 on:
   push:
     tags:
@@ -20,12 +20,16 @@ jobs:
         uses: actions/setup-dotnet@v4
         with:
           dotnet-version: '9.0.x'
-
+      - name: Verify EA DLL
+        shell: pwsh
+        run: |
+          Get-ChildItem -Recurse lib
+          Get-Item lib\Interop.EA.dll | Format-List Name,Length
       - name: Restore
         run: dotnet restore
 
-      - name: Build
-        run: dotnet build --configuration Release --no-restore
+     - name: Build
+     run: dotnet build EA17LinkMLExporter.csproj --configuration Release --no-restore -v:detailed
 
       - name: Publish
         run: >

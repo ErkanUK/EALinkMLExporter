@@ -11,6 +11,7 @@ internal static class LinkMlWriter
         var b = new StringBuilder();
         b.AppendLine("id: https://example.org/" + schemaName);
         b.AppendLine("name: " + Scalar(schemaName));
+        if (model.Version.Length > 0) b.AppendLine("version: " + Scalar(model.Version));
         if (model.Notes.Length > 0) b.AppendLine("description: " + Scalar(model.Notes));
         b.AppendLine("prefixes:");
         b.AppendLine("  linkml: https://w3id.org/linkml/");

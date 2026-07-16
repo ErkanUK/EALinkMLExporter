@@ -7,7 +7,7 @@ A 64-bit Sparx Enterprise Architect 17 add-in that exports the package selected 
 - an editable draw.io class diagram; 
 - an SVG diagram preview embedded in the Markdown.
 
-Classes, attributes, notes, enumerations, generalizations, associations, aggregations/compositions, roles, and multiplicities are included. Child packages are traversed recursively.
+Classes, attributes, notes, enumerations, generalizations, associations, aggregations/compositions, roles, multiplicities, the selected EA package version, and explicit diagram colours are included. Child packages are traversed recursively.
 
 ## Install
 

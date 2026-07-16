@@ -8,6 +8,7 @@ internal static class MarkdownWriter
     {
         var b = new StringBuilder();
         b.AppendLine("# " + model.Name).AppendLine();
+        b.AppendLine("EA package version: `" + (model.Version.Length > 0 ? Cell(model.Version) : "not set") + "`").AppendLine();
         if (model.Notes.Length > 0) b.AppendLine(model.Notes).AppendLine();
         b.AppendLine("[LinkML schema](" + linkMlName + ") · [Editable draw.io diagram](" + drawIoName + ")").AppendLine();
         b.AppendLine("![UML class diagram](" + svgName + ")").AppendLine();

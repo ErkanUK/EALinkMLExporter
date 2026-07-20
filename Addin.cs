@@ -34,7 +34,7 @@ public sealed class Addin
     {
         if (itemName == AboutItem)
         {
-            MessageBox.Show("Exports the selected UML package to LinkML YAML and Markdown with an editable draw.io diagram.",
+            MessageBox.Show("Exports the selected UML package to LinkML YAML and Markdown, including its existing EA diagrams as SVG files.",
                 "EA17 LinkML Exporter", MessageBoxButtons.OK, MessageBoxIcon.Information);
             return;
         }

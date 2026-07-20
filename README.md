@@ -5,9 +5,9 @@ A 64-bit Sparx Enterprise Architect 17 add-in that exports the package selected 
 - a LinkML YAML schema;
 - Markdown documentation, similar in spirit to EA's F8 document generation;
 - an editable draw.io class diagram; 
-- an SVG diagram preview embedded in the Markdown.
+- every existing EA diagram in the selected package tree, exported natively as SVG and embedded in the Markdown.
 
-Classes, attributes, notes, enumerations, generalizations, associations, aggregations/compositions, roles, multiplicities, the selected EA package version, and explicit diagram colours are included. Child packages are traversed recursively.
+Classes, attributes, notes, enumerations, generalizations, associations, aggregations/compositions, roles, multiplicities, the selected EA package version, and explicit diagram colours are included. Child packages are traversed recursively. Native diagram export preserves EA's saved element positions, connector routing, visible content, colours, and diagram styling. If the selected package tree has no diagrams, the exporter creates its original generated SVG preview as a fallback.
 
 ## Install
 
@@ -28,7 +28,7 @@ The script installs the included prebuilt add-in for the current Windows user an
 2. Open **Specialize > Add-Ins > LinkML Documentation** (the exact ribbon location can vary with workspace layout).
 3. Choose **Export selected package…** and select a destination folder.
 
-The add-in creates a subfolder named after the package. Open the `.md` file for the generated document and the `.drawio` file in draw.io/diagrams.net for editing.
+The add-in creates a subfolder named after the package. Existing EA diagrams are written to its `diagrams` subfolder as numbered SVG files, and are embedded in the generated `.md` document. Open the `.drawio` file in draw.io/diagrams.net for an editable generated model overview.
 
 ## LinkML mapping
 
@@ -43,6 +43,12 @@ The add-in creates a subfolder named after the package. Open the `.md` file for 
 | Upper bound > 1 or `*` | `multivalued: true` |
 
 The generated schema uses `https://example.org/<package>` as a placeholder namespace. Change it to the project's canonical URI after export.
+
+## SVG export behavior
+
+The exporter asks EA to render each saved diagram through the Automation Interface using the `.svg` filename extension. This uses the diagram as stored in EA; it does not auto-layout or reconstruct the diagram. Diagram frames, printable-element settings, themes, and other image preferences therefore follow the current EA configuration.
+
+Diagram filenames are prefixed with a stable three-digit sequence to avoid collisions when different packages contain diagrams with the same name. The Markdown uses each package path as the diagram heading.
 
 ## Uninstall
 

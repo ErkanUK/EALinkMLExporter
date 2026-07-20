@@ -4,14 +4,27 @@ namespace EA17LinkMLExporter;
 
 internal static class MarkdownWriter
 {
-    public static string Write(ModelSnapshot model, string drawIoName, string svgName, string linkMlName)
+    public static string Write(ModelSnapshot model, string drawIoName, string? fallbackSvgName, string linkMlName,
+        IReadOnlyList<ExportedDiagram> eaDiagrams)
     {
         var b = new StringBuilder();
         b.AppendLine("# " + model.Name).AppendLine();
         b.AppendLine("EA package version: `" + (model.Version.Length > 0 ? Cell(model.Version) : "not set") + "`").AppendLine();
         if (model.Notes.Length > 0) b.AppendLine(model.Notes).AppendLine();
         b.AppendLine("[LinkML schema](" + linkMlName + ") · [Editable draw.io diagram](" + drawIoName + ")").AppendLine();
-        b.AppendLine("![UML class diagram](" + svgName + ")").AppendLine();
+        if (eaDiagrams.Count > 0)
+        {
+            b.AppendLine("## EA diagrams").AppendLine();
+            foreach (var diagram in eaDiagrams)
+            {
+                b.AppendLine("### " + diagram.Name).AppendLine();
+                b.AppendLine("![" + Alt(diagram.Name) + "](" + diagram.RelativePath.Replace(" ", "%20") + ")").AppendLine();
+            }
+        }
+        else if (fallbackSvgName is not null)
+        {
+            b.AppendLine("![Generated UML class diagram](" + fallbackSvgName.Replace(" ", "%20") + ")").AppendLine();
+        }
         b.AppendLine("## Classes").AppendLine();
         foreach (var cls in model.Classes.OrderBy(x => x.Name))
         {
@@ -57,4 +70,5 @@ internal static class MarkdownWriter
 
     private static string Multiplicity(string lower, string upper) => lower == upper ? lower : lower + ".." + upper;
     private static string Cell(string value) => value.Replace("|", "\\|").Replace("\r", "").Replace("\n", "<br>");
+    private static string Alt(string value) => value.Replace("[", "(").Replace("]", ")").Replace("\r", " ").Replace("\n", " ");
 }

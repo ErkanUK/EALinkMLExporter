@@ -13,11 +13,17 @@ internal static class Exporter
         var yamlName = stem + ".linkml.yaml";
         var mdName = stem + ".md";
         var drawIoName = stem + ".drawio";
-        var svgName = stem + ".svg";
         File.WriteAllText(Path.Combine(directory, yamlName), LinkMlWriter.Write(model), new UTF8Encoding(false));
         File.WriteAllText(Path.Combine(directory, drawIoName), DiagramWriter.WriteDrawIo(model), new UTF8Encoding(false));
-        File.WriteAllText(Path.Combine(directory, svgName), DiagramWriter.WriteSvg(model), new UTF8Encoding(false));
-        File.WriteAllText(Path.Combine(directory, mdName), MarkdownWriter.Write(model, drawIoName, svgName, yamlName), new UTF8Encoding(false));
+        var eaDiagrams = EaDiagramSvgExporter.Export(repository, package, directory);
+        string? fallbackSvgName = null;
+        if (eaDiagrams.Count == 0)
+        {
+            fallbackSvgName = stem + ".svg";
+            File.WriteAllText(Path.Combine(directory, fallbackSvgName), DiagramWriter.WriteSvg(model), new UTF8Encoding(false));
+        }
+        File.WriteAllText(Path.Combine(directory, mdName),
+            MarkdownWriter.Write(model, drawIoName, fallbackSvgName, yamlName, eaDiagrams), new UTF8Encoding(false));
         return directory;
     }
 

@@ -10,9 +10,11 @@
     <ImplicitUsings>enable</ImplicitUsings>
     <AssemblyName>EA17LinkMLExporter</AssemblyName>
     <RootNamespace>EA17LinkMLExporter</RootNamespace>
+    <Version>1.2.0</Version>
     <EAInstallDir Condition="'$(EAInstallDir)' == ''">C:\Program Files\Sparx Systems\EA</EAInstallDir>
   </PropertyGroup>
   <ItemGroup>
+    <Compile Remove="tests\**\*.cs" />
     <Reference Include="Interop.EA">
       <HintPath>lib\Interop.EA.dll</HintPath>
       <Private>true</Private>

@@ -1,5 +1,8 @@
 # EA17 LinkML Exporter
 
+Disclaimer: This is an independent project and is not an official CGI product. 
+CGI is a trademark of CGI Inc. Sparx Systems and Enterprise Architect are trademarks of their respective owners.
+
 A 64-bit Sparx Enterprise Architect 17 add-in that exports the package selected in the Browser as:
 
 - a LinkML YAML schema;

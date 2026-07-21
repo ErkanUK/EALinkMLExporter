@@ -4,14 +4,20 @@ namespace EA17LinkMLExporter;
 
 internal static class MarkdownWriter
 {
-    public static string Write(ModelSnapshot model, string drawIoName, string? fallbackSvgName, string linkMlName,
-        IReadOnlyList<ExportedDiagram> eaDiagrams)
+    public static string Write(ModelSnapshot model, string? drawIoName, string? fallbackSvgName, string? linkMlName,
+        string? jsonSchemaName, string? owlName, string? turtleName, IReadOnlyList<ExportedDiagram> eaDiagrams)
     {
         var b = new StringBuilder();
         b.AppendLine("# " + model.Name).AppendLine();
         b.AppendLine("EA package version: `" + (model.Version.Length > 0 ? Cell(model.Version) : "not set") + "`").AppendLine();
         if (model.Notes.Length > 0) b.AppendLine(model.Notes).AppendLine();
-        b.AppendLine("[LinkML schema](" + linkMlName + ") · [Editable draw.io diagram](" + drawIoName + ")").AppendLine();
+        var links = new List<string>();
+        if (linkMlName is not null) links.Add("[LinkML schema](" + linkMlName + ")");
+        if (jsonSchemaName is not null) links.Add("[JSON Schema](" + jsonSchemaName + ")");
+        if (drawIoName is not null) links.Add("[Editable draw.io diagram](" + drawIoName + ")");
+        if (owlName is not null) links.Add("[OWL/RDF-XML ontology](" + owlName + ")");
+        if (turtleName is not null) links.Add("[OWL Turtle ontology](" + turtleName + ")");
+        if (links.Count > 0) b.AppendLine(string.Join(" · ", links)).AppendLine();
         if (eaDiagrams.Count > 0)
         {
             b.AppendLine("## EA diagrams").AppendLine();

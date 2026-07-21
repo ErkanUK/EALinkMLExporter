@@ -34,7 +34,7 @@ public sealed class Addin
     {
         if (itemName == AboutItem)
         {
-            MessageBox.Show("Exports the selected UML package to LinkML YAML and Markdown, including its existing EA diagrams as SVG files.",
+            MessageBox.Show("Exports the selected UML package to selectable LinkML YAML, JSON Schema, Markdown, draw.io, native EA SVG diagrams, OWL/RDF-XML and Turtle formats.",
                 "EA17 LinkML Exporter", MessageBoxButtons.OK, MessageBoxIcon.Information);
             return;
         }
@@ -45,6 +45,8 @@ public sealed class Addin
             MessageBox.Show("Select a package in the Browser first.", "EA17 LinkML Exporter", MessageBoxButtons.OK, MessageBoxIcon.Warning);
             return;
         }
+        using var optionsDialog = new ExportOptionsDialog(package.Name);
+        if (optionsDialog.ShowDialog() != DialogResult.OK) return;
         using var dialog = new FolderBrowserDialog
         {
             Description = "Choose the folder that will contain the generated documentation",
@@ -54,7 +56,7 @@ public sealed class Addin
         if (dialog.ShowDialog() != DialogResult.OK) return;
         try
         {
-            var output = Exporter.Export(repository, package, dialog.SelectedPath);
+            var output = Exporter.Export(repository, package, dialog.SelectedPath, optionsDialog.Options);
             MessageBox.Show("Export complete:\n" + output, "EA17 LinkML Exporter", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
         catch (Exception ex)

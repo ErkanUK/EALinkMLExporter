@@ -6,11 +6,11 @@
     <EnableDynamicLoading>true</EnableDynamicLoading>
     <PlatformTarget>x64</PlatformTarget>
     <Platforms>x64</Platforms>
+    <Version>1.2.0</Version>
     <Nullable>enable</Nullable>
     <ImplicitUsings>enable</ImplicitUsings>
     <AssemblyName>EA17LinkMLExporter</AssemblyName>
     <RootNamespace>EA17LinkMLExporter</RootNamespace>
-    <Version>1.2.0</Version>
     <EAInstallDir Condition="'$(EAInstallDir)' == ''">C:\Program Files\Sparx Systems\EA</EAInstallDir>
   </PropertyGroup>
   <ItemGroup>

@@ -33,6 +33,9 @@ jobs:
       - name: Build
         run: dotnet build EA17LinkMLExporter.csproj --configuration Release --no-restore
 
+      - name: Test exporters
+        run: dotnet run --project tests/EA17LinkMLExporter.Tests.csproj --configuration Release
+
       - name: Publish
         run: dotnet publish EA17LinkMLExporter.csproj --configuration Release --runtime win-x64 --self-contained false --output publish
 

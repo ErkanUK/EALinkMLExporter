@@ -5,6 +5,7 @@ internal sealed class ModelSnapshot
     public required string Name { get; init; }
     public required string Version { get; init; }
     public required string Notes { get; init; }
+    public required string OntologyIri { get; init; }
     public List<UmlClass> Classes { get; } = [];
     public List<UmlEnum> Enums { get; } = [];
     public List<UmlRelation> Relations { get; } = [];
@@ -45,6 +46,7 @@ internal sealed class UmlProperty
     public required string Upper { get; init; }
     public bool Derived { get; init; }
     public bool ReadOnly { get; init; }
+    public bool Identifier { get; init; }
 }
 
 internal sealed class UmlRelation

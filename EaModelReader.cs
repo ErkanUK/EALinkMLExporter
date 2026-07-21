@@ -12,7 +12,9 @@ internal static class EaModelReader
         {
             Name = root.Name,
             Version = root.Version ?? "",
-            Notes = CleanNotes(root.Notes)
+            Notes = CleanNotes(root.Notes),
+            OntologyIri = "urn:ea:model:" + (string.IsNullOrWhiteSpace(root.PackageGUID)
+                ? Uri.EscapeDataString(root.Name) : root.PackageGUID.Trim('{', '}'))
         };
         ReadPackage(repository, root, root.Name, model, appearances.Elements);
         ReadRelations(repository, model, appearances.Connectors);
@@ -68,7 +70,8 @@ internal static class EaModelReader
                     Lower = string.IsNullOrWhiteSpace(attribute.LowerBound) ? "0" : attribute.LowerBound,
                     Upper = string.IsNullOrWhiteSpace(attribute.UpperBound) ? "1" : attribute.UpperBound,
                     Derived = attribute.IsDerived,
-                    ReadOnly = attribute.IsConst
+                    ReadOnly = attribute.IsConst,
+                    Identifier = attribute.IsID
                 });
             }
             model.Classes.Add(cls);
